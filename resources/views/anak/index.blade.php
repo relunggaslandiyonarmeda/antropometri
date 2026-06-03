@@ -70,13 +70,19 @@
                 {{-- Tombol Export --}}
                 @php $q = http_build_query(request()->only(['search','status_gizi'])) @endphp
                 <div class="btn-group btn-group-sm">
-                    <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bi bi-download me-1"></i>Export
+                    <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-printer me-1"></i>Cetak
                     </button>
                     <ul class="dropdown-menu">
                         <li>
+                            <a class="dropdown-item" href="{{ route('laporan.print') }}?{{ $q }}" target="_blank">
+                                <i class="bi bi-browser me-2"></i>Pratinjau Web
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
                             <a class="dropdown-item" href="{{ route('laporan.pdf') }}?{{ $q }}" target="_blank">
-                                <i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF
+                                <i class="bi bi-file-earmark-pdf text-danger me-2"></i>Download PDF
                             </a>
                         </li>
                         <li>

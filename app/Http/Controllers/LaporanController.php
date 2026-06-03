@@ -27,10 +27,16 @@ class LaporanController extends Controller
     public function pdf(Request $request)
     {
         $data = $this->getQuery($request)->get();
-        $pdf  = Pdf::loadView('laporan.pdf', compact('data'))
+        $pdf  = Pdf::loadView('laporan.pdf', compact('data', 'request'))
                    ->setPaper('a4', 'landscape')
                    ->setOption(['defaultFont' => 'DejaVu Sans', 'isHtml5ParserEnabled' => true, 'isRemoteEnabled' => false]);
         return $pdf->download('laporan-antropometri-' . now()->format('Ymd') . '.pdf');
+    }
+
+    public function print(Request $request)
+    {
+        $data = $this->getQuery($request)->get();
+        return view('laporan.print', compact('data', 'request'));
     }
 
     public function excel(Request $request)
