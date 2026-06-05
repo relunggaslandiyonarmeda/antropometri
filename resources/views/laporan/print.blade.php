@@ -3,744 +3,419 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pratinjau Laporan Antropometri</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Laporan Antropometri Anak</title>
     <style>
         :root {
-            --brand-navy: #0F3D5C;
-            --brand-blue: #1a6fa8;
-            --brand-light: #EAF2FB;
-            --brand-border: #CBD5E1;
+            --navy:   #1a365d;
+            --blue:   #2563eb;
+            --border: #d1d5db;
+            --stripe: #f0f6ff;
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: #F1F5F9;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             font-size: 11px;
-            color: #1a1a1a;
-            padding: 0;
-            margin: 0;
+            color: #111827;
+            background: #f3f4f6;
         }
 
-        .topbar {
-            background: #ffffff;
-            border-bottom: 2px solid var(--brand-navy);
+        /* Toolbar */
+        .toolbar {
+            position: sticky; top: 0; z-index: 50;
+            background: #fff; border-bottom: 2px solid var(--navy);
             padding: 8px 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            display: flex; align-items: center; justify-content: space-between;
         }
-
-        .topbar-inner {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .topbar-brand {
-            font-weight: 700;
-            font-size: 12px;
-            color: var(--brand-navy);
-            letter-spacing: 0.3px;
-        }
-
-        .topbar-actions {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .btn-topbar {
-            font-size: 10px;
-            padding: 4px 10px;
-            border-radius: 4px;
-        }
-
-        .report-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 12px 10px 24px 10px;
-        }
-
-        .print-only-header {
-            display: none;
-        }
-
-        /* PRINT STYLES */
-        @media print {
-html, body {
-    background: #ffffff !important;
-    font-size: 7.5px !important;
-    padding: 0 !important;
-    margin: 0 !important;
-            }
-
-            .topbar, .no-print {
-                display: none !important;
-            }
-
-            .print-only-header {
-                display: block !important;
-            }
-
-            .report-container {
-                max-width: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
-            .print-sheet {
-                margin: 0 !important;
-                box-shadow: none !important;
-                border-radius: 0 !important;
-            }
-
-@page {
-    margin: 20mm;
-    size: A4 landscape;
-}
-        }
-
-        /* REPORT SHEET */
-        .print-sheet {
-            background: #ffffff;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .sheet-header {
-            background: var(--brand-navy);
-            color: #ffffff;
-            padding: 10px 14px 8px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .sheet-header .sh-title {
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 0.4px;
-            color: #ffffff;
-        }
-
-        .sheet-header .sh-subtitle {
-            font-size: 9px;
-            color: #93c5fd;
-            margin-top: 2px;
-        }
-
-        .sheet-header .sh-meta {
-            font-size: 8px;
-            color: #cbd5e1;
-            text-align: right;
-        }
-
-        .info-strip {
-            display: flex;
-            gap: 8px;
-            padding: 8px 12px;
-            background: #F8FAFC;
-            border-bottom: 1px solid #E2E8F0;
-            flex-wrap: wrap;
-        }
-
-        .info-pill {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: #ffffff;
-            padding: 4px 10px;
-            border-radius: 4px;
-            border: 1px solid var(--brand-border);
-            font-size: 9px;
-        }
-
-        .info-pill .pill-val {
-            font-weight: 700;
-            color: var(--brand-navy);
-            font-size: 12px;
-        }
-
-        .info-pill .pill-label {
-            color: #64748B;
-            font-size: 8px;
-        }
-
-        .filter-bar {
-            padding: 6px 12px;
-            font-size: 8.5px;
-            color: #555;
-            border-bottom: 1px solid #E2E8F0;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* TABLE */
-        .data-section-heading {
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--brand-navy);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 6px 12px 3px 12px;
-            border-bottom: 1.5px solid var(--brand-blue);
-            margin: 0;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 8.5px;
-            margin: 0;
-        }
-
-        .data-table thead th {
-            background: var(--brand-navy);
-            color: #ffffff;
-            font-weight: 700;
-            text-align: center;
-            padding: 3px 2px;
-            border: 0.4pt solid #1E3A5F;
-            font-size: 7px;
-            white-space: nowrap;
-        }
-
-        .data-table thead th:first-child {
-            border-radius: 0;
-        }
-
-        .data-table tbody tr {
-            page-break-inside: avoid;
-        }
-
-        .data-table tbody tr:nth-child(odd) td {
-            background: #ffffff;
-        }
-
-        .data-table tbody tr:nth-child(even) td {
-            background: #F0F7FF;
-        }
-
-        .data-table tbody td {
-            padding: 2px 3px;
-            border: 0.35pt solid var(--brand-border);
-            vertical-align: middle;
-        }
-
-        .col-no {
-            width: 22px;
-            text-align: center;
-            font-weight: 700;
-            background: #E5E7EB !important;
-            color: #374151;
-            font-size: 8px;
-        }
-
-        .col-nama {
-            text-align: left;
-            font-weight: 700;
-            font-size: 8.5px;
-            max-width: 140px;
-        }
-
-        .col-nilai {
-            text-align: center;
-            font-family: 'SF Mono', 'Consolas', 'DejaVu Sans Mono', monospace;
-            font-size: 8px;
-            font-weight: 600;
-        }
-
-        .col-status {
-            text-align: center;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 1.5px 5px;
-            border-radius: 3px;
-            font-size: 7px;
-            font-weight: 700;
-            color: #ffffff;
-            letter-spacing: 0.2px;
-            line-height: 1.3;
-            white-space: nowrap;
-        }
-
-        .badge-sangat-kurang { background: #DC2626; }
-        .badge-kurang        { background: #EA580C; }
-        .badge-normal        { background: #16A34A; }
-        .badge-risiko-lebih  { background: #2563EB; }
-        .badge-lebih         { background: #9333EA; }
-        .badge-na            { background: #9CA3AF; }
-
-        .no-data {
-            text-align: center;
-            padding: 20px 16px;
-            color: #94a3b8;
-            font-style: italic;
-            font-size: 10px;
-        }
-
-        /* BOTTOM SECTION */
-        .bottom-section {
-            display: flex;
-            gap: 16px;
-            padding: 10px 12px;
-        }
-
-        .h-divider {
-            border-top: 1.5pt solid var(--brand-navy);
-            margin: 0 12px;
-        }
-
-        .rekap-area {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .section-title {
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--brand-navy);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-            border-bottom: 1pt solid var(--brand-blue);
-            padding-bottom: 2px;
-        }
-
-        .table-sm-custom {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 8.5px;
-        }
-
-        .table-sm-custom thead th {
-            background: var(--brand-navy);
-            color: #ffffff;
-            font-weight: 700;
-            text-align: center;
-            padding: 4px 6px;
-            border: 0.5pt solid #1E3A5F;
-            font-size: 8px;
-        }
-
-        .table-sm-custom tbody td {
-            padding: 3px 6px;
-            border: 0.4pt solid var(--brand-border);
-        }
-
-        .table-sm-custom tbody tr:nth-child(odd) td {
-            background: #ffffff;
-        }
-
-        .table-sm-custom tbody tr:nth-child(even) td {
-            background: #F0F7FF;
-        }
-
-        .table-sm-custom tbody tr.total-row td {
-            background: #E2E8F0 !important;
-            font-weight: 700;
-            color: var(--brand-navy);
-            border-top: 1pt solid var(--brand-navy);
-        }
-
-        .bar-outer {
-            background: #E2E8F0;
-            border: 0.4pt solid #94A3B8;
-            height: 6px;
-            width: 70px;
-            display: inline-block;
-            vertical-align: middle;
-            border-radius: 2px;
-        }
-
-        .bar-inner {
-            height: 6px;
-            border-radius: 2px;
-        }
-
-        .ket-box {
-            margin-top: 5px;
-            font-size: 7.5px;
-            color: #555;
-            padding: 3px 6px;
-            background: #F8FAFC;
-            border-left: 2pt solid var(--brand-blue);
-        }
-
-        .ttd-box {
-            width: 220px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .sign-role {
-            font-size: 8.5px;
-            color: #325;
-            text-align: center;
-            margin-bottom: 2px;
-        }
-
-        .sign-line {
-            width: 100%;
-            height: 1px;
-            background: var(--brand-navy);
-            margin: 70px 0 3px 0;
-        }
-
-        .sign-name {
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--brand-navy);
-            text-align: center;
-            min-height: 14px;
-        }
-
-        .sign-nip {
-            font-size: 8px;
-            color: #666;
-            text-align: center;
-        }
-
-        .sheet-footer {
-            background: #ffffff;
-            border-top: 1.5pt solid var(--brand-navy);
-            padding: 4px 12px;
-            font-size: 7.5px;
-            color: #64748B;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .footer-brand {
-            font-weight: 700;
-            color: var(--brand-navy);
-        }
-
-        /* Action buttons */
+        .toolbar-brand { font-weight: 700; font-size: 12px; color: var(--navy); }
+        .toolbar-brand small { font-weight: 400; color: #6b7280; font-size: 10px; margin-left: 8px; }
+        .toolbar-actions { display: flex; gap: 6px; }
         .btn {
-            font-size: 10px;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: 600;
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 5px 12px; border-radius: 4px; font-size: 11px;
+            font-weight: 600; cursor: pointer; text-decoration: none;
+            border: 1.5px solid transparent; transition: .15s;
         }
-        .btn-print-web {
-            background: #ffffff;
-            border: 1px solid var(--brand-blue);
-            color: var(--brand-blue);
+        .btn-outline-navy  { border-color: var(--navy); color: var(--navy); background: #fff; }
+        .btn-outline-navy:hover  { background: var(--navy); color: #fff; }
+        .btn-outline-red   { border-color: #dc2626; color: #dc2626; background: #fff; }
+        .btn-outline-red:hover   { background: #dc2626; color: #fff; }
+        .btn-outline-green { border-color: #16a34a; color: #16a34a; background: #fff; }
+        .btn-outline-green:hover { background: #16a34a; color: #fff; }
+
+        /* Page */
+        .page { max-width: 780px; margin: 16px auto; padding: 0 12px 32px; }
+        .card { background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: hidden; }
+
+        /* Report header */
+        .report-header {
+            background: var(--navy); color: #fff; padding: 12px 16px;
+            display: flex; justify-content: space-between; align-items: flex-start;
         }
-        .btn-print-web:hover {
-            background: var(--brand-blue);
-            color: #ffffff;
+        .rh-title { font-size: 13px; font-weight: 700; letter-spacing: .3px; }
+        .rh-sub   { font-size: 9px; color: #93c5fd; margin-top: 3px; }
+        .rh-meta  { font-size: 9px; color: #cbd5e1; text-align: right; white-space: nowrap; }
+
+        /* Stats */
+        .stats { display: flex; border-bottom: 1px solid var(--border); }
+        .stat-cell { flex: 1; padding: 8px 6px; text-align: center; border-right: 1px solid var(--border); }
+        .stat-cell:last-child { border-right: none; }
+        .stat-val { font-size: 16px; font-weight: 700; line-height: 1; }
+        .stat-lbl { font-size: 8px; color: #6b7280; margin-top: 2px; }
+
+        /* Filter */
+        .filter-bar {
+            padding: 5px 14px; font-size: 9px; color: #6b7280;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between;
         }
-        .btn-pdf {
-            background: #ffffff;
-            border: 1px solid #DC2626;
-            color: #DC2626;
+
+        /* Section head */
+        .section-head {
+            font-size: 9px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .5px; color: var(--navy);
+            padding: 7px 14px 5px; border-bottom: 1.5px solid var(--blue);
         }
-        .btn-pdf:hover {
-            background: #DC2626;
-            color: #ffffff;
+
+        /* Table */
+        .data-tbl { width: 100%; border-collapse: collapse; font-size: 8px; }
+        .data-tbl thead th {
+            background: var(--navy); color: #fff; padding: 4px 4px;
+            font-size: 7.5px; font-weight: 700; text-align: center; border: .4pt solid #243e6b;
         }
-        .btn-excel {
-            background: #ffffff;
-            border: 1px solid #16A34A;
-            color: #16A34A;
+        .data-tbl thead th.th-left { text-align: left; }
+        .data-tbl tbody tr.row-a  td { background: #fff; }
+        .data-tbl tbody tr.row-b  td { background: #f8fafc; }
+        .data-tbl tbody tr.row-a2 td { background: var(--stripe); }
+        .data-tbl tbody tr.row-b2 td { background: #e8f0fb; }
+        .data-tbl tbody td { padding: 3px 5px; border: .35pt solid var(--border); vertical-align: middle; }
+        .td-no    { text-align: center; font-weight: 700; color: #374151; background: #e9ecef !important; width: 26px; vertical-align: top !important; }
+        .td-info  { vertical-align: top !important; }
+        .td-nama  { font-weight: 700; font-size: 8.5px; }
+        .td-sub   { font-weight: 400; font-size: 7.5px; color: #6b7280; }
+        .td-detail{ font-size: 7.5px; color: #374151; margin-top: 2px; }
+        .td-c     { text-align: center; }
+        .td-mono  { text-align: center; font-family: 'Consolas', monospace; font-size: 8px; font-weight: 600; }
+        .td-label { font-size: 7px; font-weight: 700; color: #fff; background: var(--blue) !important; text-align: center; padding: 2px 4px; }
+
+        /* Badges */
+        .badge-status, .badge-s {
+            display: inline-block; padding: 2px 6px; border-radius: 3px;
+            font-size: 7.5px; font-weight: 700; color: #fff; white-space: nowrap;
         }
-        .btn-excel:hover {
-            background: #16A34A;
-            color: #ffffff;
+        .bg-danger    { background: #dc2626; }
+        .bg-warning   { background: #d97706; }
+        .bg-success   { background: #16a34a; }
+        .bg-primary   { background: #2563eb; }
+        .bg-purple    { background: #7c3aed; }
+        .bg-info      { background: #0891b2; }
+        .bg-dark      { background: #374151; }
+        .bg-secondary { background: #9ca3af; }
+
+        /* ── Bottom (screen) ── */
+        .bottom {
+            display: flex; gap: 16px;
+            padding: 14px 14px 16px; align-items: flex-end;
+        }
+        .rekap     { flex: 1; min-width: 0; }
+        .sign-area { width: 200px; flex-shrink: 0; }
+
+        .sub-head {
+            font-size: 8.5px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .4px; color: var(--navy);
+            border-bottom: 1pt solid var(--blue); padding-bottom: 3px; margin-bottom: 8px;
+        }
+        .rekap-cards { display: flex; gap: 5px; margin-bottom: 7px; flex-wrap: wrap; }
+        .rekap-card {
+            flex: 1; min-width: 60px; border: 1px solid var(--border);
+            border-radius: 5px; padding: 6px 4px; text-align: center;
+        }
+        .rc-val { font-size: 18px; font-weight: 700; line-height: 1; }
+        .rc-pct { font-size: 7.5px; color: #6b7280; margin-top: 1px; }
+        .rc-lbl { font-size: 7px; color: #374151; margin-top: 3px; font-weight: 600; }
+        .legend {
+            font-size: 7.5px; color: #555; padding: 4px 8px;
+            background: #f8fafc; border-left: 2.5pt solid var(--blue);
+        }
+
+        /* TTD */
+        .sign-box { border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
+        .sign-header { background: var(--navy); color: #fff; font-size: 8px; font-weight: 700; text-align: center; padding: 5px 8px; }
+        .sign-body   { padding: 10px 14px 12px; text-align: center; }
+        .sign-place  { font-size: 8.5px; color: #374151; margin-bottom: 2px; }
+        .sign-role   { font-size: 8px; color: #6b7280; line-height: 1.5; }
+        .sign-space  { height: 52px; }
+        .sign-line   { border-top: 1px solid var(--navy); margin: 0 8px 4px; }
+        .sign-name   { font-size: 9px; font-weight: 700; color: var(--navy); }
+        .sign-nip    { font-size: 8px; color: #6b7280; margin-top: 1px; }
+
+        /* Divider & footer */
+        .divider { border-top: 1.5pt solid var(--navy); margin: 0 14px; }
+        .report-footer {
+            border-top: 1.5pt solid var(--navy); padding: 5px 14px;
+            display: flex; justify-content: space-between;
+            font-size: 7.5px; color: #6b7280;
+        }
+        .footer-brand { font-weight: 700; color: var(--navy); }
+
+        /* ══════════════════
+           PRINT
+        ══════════════════ */
+        @media print {
+            body { background: #fff; font-size: 7.5px; }
+            .toolbar { display: none !important; }
+            .page { max-width: none; margin: 0; padding: 0; }
+            .card { border-radius: 0; box-shadow: none; }
+            .stat-val { font-size: 13px; }
+            .data-tbl { font-size: 7.5px; }
+            .data-tbl thead th { font-size: 7px; }
+            .badge-status, .badge-s { font-size: 7px; padding: 1.5px 4px; }
+            .sign-area { width: 170px; }
+
+            /* Bottom section fixed di bawah halaman */
+            .bottom-anchor {
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                background: #fff;
+                padding: 0 12mm;
+            }
+            /* Beri ruang agar konten tidak tertimpa bottom-anchor */
+            .bottom-spacer { height: 200px; }
+
+            @page { size: A4 portrait; margin: 12mm 12mm 0 12mm; }
         }
     </style>
 </head>
 <body>
 
-{{-- PRINT-ONLY HEADER --}}
-<div class="print-only-header">
-    <div style="background:#0F3D5C; color:#fff; padding:6px 10px; margin-bottom:4px;">
-        <div style="font-size:11px; font-weight:700;">LAPORAN PENGUKURAN ANTROPOMETRI ANAK</div>
-        <div style="font-size:7px; color:#93c5fd;">Penilaian Status Gizi Berdasarkan Permenkes No. 2 Tahun 2020</div>
+{{-- Toolbar --}}
+<div class="toolbar">
+    <div>
+        <span class="toolbar-brand">
+            Laporan Antropometri
+            <small>{{ $data->count() }} data</small>
+        </span>
     </div>
-    <div style="font-size:6.5px; color:#555; padding:2px 0;">
-        Dicetak: {{ now()->format('d F Y, H:i') }} WIB
+    <div class="toolbar-actions">
+        <button onclick="window.print()" class="btn btn-outline-navy">&#128438; Print</button>
+        <a href="{{ route('laporan.pdf', request()->only(['search','status_gizi'])) }}"
+           target="_blank" class="btn btn-outline-red">&#128196; PDF</a>
+        <a href="{{ route('laporan.excel', request()->only(['search','status_gizi'])) }}"
+           class="btn btn-outline-green">&#128202; Excel</a>
     </div>
 </div>
 
-{{-- TOPBAR --}}
-<div class="topbar no-print">
-    <div class="topbar-inner">
+<div class="page">
+<div class="card">
+
+    {{-- Header --}}
+    <div class="report-header">
         <div>
-            <span class="topbar-brand">
-                <i class="bi bi-clipboard2-data me-1"></i>
-                Laporan Antropometri — Pratinjau
-            </span>
-            <span class="text-muted ms-2" style="font-size:9px;">
-                {{ $data->count() }} data ditampilkan
-            </span>
+            <div class="rh-title">LAPORAN PENGUKURAN ANTROPOMETRI ANAK</div>
+            <div class="rh-sub">Penilaian Status Gizi &mdash; Permenkes No. 2 Tahun 2020</div>
         </div>
-        <div class="topbar-actions">
-            <button onclick="window.print()" class="btn btn-print-web btn-topbar">
-                <i class="bi bi-printer me-1"></i> Print
-            </button>
-            <a href="{{ route('laporan.pdf', request()->only(['search','status_gizi'])) }}"
-               class="btn btn-pdf btn-topbar" target="_blank">
-                <i class="bi bi-file-earmark-pdf me-1"></i> PDF
-            </a>
-            <a href="{{ route('laporan.excel', request()->only(['search','status_gizi'])) }}"
-               class="btn btn-excel btn-topbar">
-                <i class="bi bi-file-earmark-excel me-1"></i> Excel
-            </a>
+        <div class="rh-meta">
+            Dicetak: {{ now()->isoFormat('D MMMM Y') }}<br>{{ now()->format('H:i') }} WIB
         </div>
     </div>
-</div>
 
-{{-- REPORT --}}
-<div class="report-container">
-
+    {{-- Stats --}}
     @php
-        $total   = $data->count();
-        $stBuruk = $data->where('status_bbu', 'Berat Badan Sangat Kurang')->count();
-        $stKurang= $data->where('status_bbu', 'Berat Badan Kurang')->count();
-        $stNormal= $data->where('status_bbu', 'Berat Badan Normal')->count();
-        $stRisiko= $data->where('status_bbu', 'Risiko Berat Badan Lebih')->count();
-        $stLebih = $data->where('status_bbu', 'Berat Badan Lebih')->count();
+        $total    = $data->count();
+        $stBuruk  = $data->where('status_bbu', 'Berat Badan Sangat Kurang')->count();
+        $stKurang = $data->where('status_bbu', 'Berat Badan Kurang')->count();
+        $stNormal = $data->where('status_bbu', 'Berat Badan Normal')->count();
+        $stRisiko = $data->where('status_bbu', 'Risiko Berat Badan Lebih')->count();
+        $stLebih  = $data->where('status_bbu', 'Berat Badan Lebih')->count();
     @endphp
-
-    <div class="print-sheet">
-        {{-- SHEET HEADER --}}
-        <div class="sheet-header">
-            <div>
-                <div class="sh-title">LAPORAN PENGUKURAN ANTROPOMETRI ANAK</div>
-                <div class="sh-subtitle">Penilaian Status Gizi Berdasarkan Permenkes No. 2 Tahun 2020</div>
-            </div>
-            <div class="sh-meta">
-                <div>Dicetak: {{ now()->format('d F Y') }}</div>
-                <div>{{ now()->format('H:i') }} WIB</div>
-            </div>
+    <div class="stats">
+        <div class="stat-cell">
+            <div class="stat-val" style="color:var(--navy);">{{ $total }}</div>
+            <div class="stat-lbl">Total Anak</div>
         </div>
-
-        {{-- INFO STRIP --}}
-        <div class="info-strip">
-            <div class="info-pill">
-                <span class="pill-val">{{ $total }}</span>
-                <span class="pill-label">Total Anak</span>
-            </div>
-            <div class="info-pill">
-                <span class="pill-val" style="color:#DC2626;">{{ $stBuruk }}</span>
-                <span class="pill-label">BB Sangat Kurang</span>
-            </div>
-            <div class="info-pill">
-                <span class="pill-val" style="color:#EA580C;">{{ $stKurang }}</span>
-                <span class="pill-label">BB Kurang</span>
-            </div>
-            <div class="info-pill">
-                <span class="pill-val" style="color:#16A34A;">{{ $stNormal }}</span>
-                <span class="pill-label">BB Normal</span>
-            </div>
-            <div class="info-pill">
-                <span class="pill-val" style="color:#2563EB;">{{ $stRisiko }}</span>
-                <span class="pill-label">Risiko BB Lebih</span>
-            </div>
-            <div class="info-pill">
-                <span class="pill-val" style="color:#9333EA;">{{ $stLebih }}</span>
-                <span class="pill-label">BB Lebih</span>
-            </div>
+        <div class="stat-cell">
+            <div class="stat-val" style="color:#dc2626;">{{ $stBuruk }}</div>
+            <div class="stat-lbl">BB Sgt Kurang</div>
         </div>
-
-        {{-- FILTER BAR --}}
-        <div class="filter-bar">
-            <div>
-                @if($request->filled('search'))
-                    <i class="bi bi-search me-1"></i> Pencarian: <strong>{{ $request->search }}</strong>
-                @endif
-                @if($request->filled('status_gizi'))
-                    &nbsp;&nbsp;Filter: <strong>{{ $request->status_gizi }}</strong>
-                @endif
-                @if(!$request->filled('search') && !$request->filled('status_gizi'))
-                    <i class="bi bi-funnel me-1"></i> Menampilkan seluruh data
-                @endif
-            </div>
-            <div>
-                <i class="bi bi-shield-check me-1"></i> Sumber: Permenkes No. 2 Tahun 2020
-            </div>
+        <div class="stat-cell">
+            <div class="stat-val" style="color:#d97706;">{{ $stKurang }}</div>
+            <div class="stat-lbl">BB Kurang</div>
         </div>
-
-        {{-- TABLE --}}
-        <div class="data-section-heading">Detail Data Pengukuran &amp; Status Gizi (BB/U, TB/U, BB/TB, IMT/U)</div>
-        <div class="table-responsive">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th rowspan="2" style="width:1.6%;">No</th>
-                        <th rowspan="2" style="width:10%;">Nama Anak / Orang Tua</th>
-                        <th rowspan="2" style="width:6.5%;">Alamat</th>
-                        <th rowspan="2" style="width:4.5%;">Tgl Ukur</th>
-                        <th rowspan="2" style="width:2%;">JK</th>
-                        <th rowspan="2" style="width:3%;">Umur</th>
-                        <th rowspan="2" style="width:3.5%;">BB/kg</th>
-                        <th rowspan="2" style="width:3.5%;">TB/cm</th>
-                        <th rowspan="2" style="width:3%;">IMT</th>
-                        <th colspan="2" style="width:8.5%;">BB/U</th>
-                        <th colspan="2" style="width:8.5%;">TB/U</th>
-                        <th colspan="2" style="width:8.5%;">BB/TB</th>
-                        <th colspan="2" style="width:8.5%;">IMT/U</th>
-                    </tr>
-                    <tr>
-                        <th style="width:4%;">Z</th>
-                        <th style="width:4.5%;">Status</th>
-                        <th style="width:4%;">Z</th>
-                        <th style="width:4.5%;">Status</th>
-                        <th style="width:4%;">Z</th>
-                        <th style="width:4.5%;">Status</th>
-                        <th style="width:4%;">Z</th>
-                        <th style="width:4.5%;">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($data as $i => $a)
-                    <tr>
-                        <td class="col-no">{{ $i + 1 }}</td>
-                        <td class="col-nama">
-                            {{ $a->nama_anak }}
-                            @if($a->nama_orang_tua)
-                                <div style="font-weight:400; color:#64748B; font-size:7.5px; font-family: inherit;">
-                                    {{ $a->nama_orang_tua }}
-                                </div>
-                            @endif
-                        </td>
-                        <td style="font-size:8px;">{{ $a->alamat ?? '-' }}</td>
-                        <td class="col-nilai">{{ $a->tanggal_pengukuran->format('d/m/Y') }}</td>
-                        <td class="col-nilai">{{ $a->jenis_kelamin == 'Laki - Laki' ? 'L' : 'P' }}</td>
-                        <td class="col-nilai">{{ $a->umur_bulan }}</td>
-                        <td class="col-nilai">{{ $a->berat_badan }}</td>
-                        <td class="col-nilai">{{ $a->tinggi_badan }}</td>
-                        <td class="col-nilai">{{ $a->imt ?? '-' }}</td>
-
-                        <td class="col-nilai" style="font-weight:700; color:#0F3D5C;">{{ $a->zscore_bbu ?? '-' }}</td>
-                        <td class="col-status">@include('laporan.partials.status-badge', ['status' => $a->status_bbu])</td>
-
-                        <td class="col-nilai" style="font-weight:700; color:#0F3D5C;">{{ $a->zscore_tbu ?? '-' }}</td>
-                        <td class="col-status">@include('laporan.partials.status-badge', ['status' => $a->status_tbu])</td>
-
-                        <td class="col-nilai" style="font-weight:700; color:#0F3D5C;">{{ $a->zscore_bbtb ?? '-' }}</td>
-                        <td class="col-status">@include('laporan.partials.status-badge', ['status' => $a->status_bbtb])</td>
-
-                        <td class="col-nilai" style="font-weight:700; color:#0F3D5C;">{{ $a->zscore_imtu ?? '-' }}</td>
-                        <td class="col-status">@include('laporan.partials.status-badge', ['status' => $a->status_imtu])</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="18" class="no-data">Tidak ada data untuk ditampilkan.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div class="stat-cell">
+            <div class="stat-val" style="color:#16a34a;">{{ $stNormal }}</div>
+            <div class="stat-lbl">BB Normal</div>
         </div>
-
-        {{-- BOTTOM: REKAP + TTD --}}
-        <div class="h-divider" style="margin-top:12px;"></div>
-        <div class="bottom-section">
-            <div class="rekap-area">
-                <div class="section-title">Rekapitulasi Status Gizi (BB/U)</div>
-                <table class="table-sm-custom">
-                    <thead>
-                        <tr>
-                            <th style="text-align:left; width:38%;">Status Gizi</th>
-                            <th style="text-align:center; width:12%;">Jumlah</th>
-                            <th style="text-align:center; width:10%;">%</th>
-                            <th style="text-align:left;">Proporsi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $rekapBb = [
-                                ['label' => 'BB Sangat Kurang',  'count' => $stBuruk, 'color' => '#DC2626'],
-                                ['label' => 'BB Kurang',          'count' => $stKurang, 'color' => '#EA580C'],
-                                ['label' => 'BB Normal',          'count' => $stNormal, 'color' => '#16A34A'],
-                                ['label' => 'Risiko BB Lebih',    'count' => $stRisiko, 'color' => '#2563EB'],
-                                ['label' => 'BB Lebih',           'count' => $stLebih, 'color' => '#9333EA'],
-                            ];
-                        @endphp
-                        @foreach($rekapBb as $r)
-                            @php $pct = $total > 0 ? round($r['count'] / $total * 100, 1) : 0; @endphp
-                            <tr>
-                                <td>{{ $r['label'] }}</td>
-                                <td style="text-align:center; font-weight:700;">{{ $r['count'] }}</td>
-                                <td style="text-align:center;">{{ $pct }}%</td>
-                                <td>
-                                    <div class="bar-outer">
-                                        <div class="bar-inner" style="width:{{ $pct }}%; background:{{ $r['color'] }};"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                        <tr class="total-row">
-                            <td>Total</td>
-                            <td style="text-align:center;">{{ $total }}</td>
-                            <td style="text-align:center;">100%</td>
-                            <td style="text-align:center;">100%</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="ket-box">
-                    <strong>Keterangan Z-Score:</strong>
-                    &nbsp; Z &lt; -3 &rarr; Sangat Kurang
-                    &nbsp;&nbsp;|&nbsp;&nbsp;
-                    -3 &le; Z &lt; -2 &rarr; Kurang
-                    &nbsp;&nbsp;|&nbsp;&nbsp;
-                    -2 &le; Z &le; 2 &rarr; Normal
-                    &nbsp;&nbsp;|&nbsp;&nbsp;
-                    Z &gt; 2 &rarr; Lebih / Obesitas
-                </div>
-            </div>
-
-            <div class="ttd-box">
-                <div class="sign-role">
-                    <strong>Mengetahui,</strong><br>
-                    Petugas Gizi / Nakes<br>
-                    Penanggung Jawab
-                </div>
-                <div class="sign-line"></div>
-                <div class="sign-name">( _____________________ )</div>
-                <div class="sign-nip">NIP. _____________________</div>
-            </div>
+        <div class="stat-cell">
+            <div class="stat-val" style="color:#2563eb;">{{ $stRisiko }}</div>
+            <div class="stat-lbl">Risiko Lebih</div>
         </div>
-
-        {{-- FOOTER --}}
-        <div class="sheet-footer">
-            <div>
-                <span class="footer-brand">Sistem Informasi Antropometri Anak</span>
-                &nbsp;&#8226;&nbsp; Berdasarkan Permenkes No. 2 Tahun 2020 &nbsp;&#8226;&nbsp;
-                Laporan ini berlaku untuk keperluan penilaian status gizi anak.
-            </div>
-            <div>
-                Halaman 1 &nbsp;&#8226;&nbsp; {{ now()->format('d/m/Y H:i') }} WIB
-            </div>
+        <div class="stat-cell">
+            <div class="stat-val" style="color:#7c3aed;">{{ $stLebih }}</div>
+            <div class="stat-lbl">BB Lebih</div>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.no-print').forEach(function(el) {
-            el.style.display = '';
-        });
-    });
-</script>
+    {{-- Filter --}}
+    <div class="filter-bar">
+        <span>
+            @if($request->filled('search'))
+                Pencarian: <strong>{{ $request->search }}</strong>
+            @endif
+            @if($request->filled('status_gizi'))
+                &nbsp; Filter: <strong>{{ $request->status_gizi }}</strong>
+            @endif
+            @if(!$request->filled('search') && !$request->filled('status_gizi'))
+                Menampilkan seluruh data
+            @endif
+        </span>
+        <span>Permenkes No. 2 Tahun 2020</span>
+    </div>
+
+    {{-- Table --}}
+    <div class="section-head">Data Pengukuran &amp; Status Gizi</div>
+    <table class="data-tbl">
+        <thead>
+            <tr>
+                <th rowspan="2" style="width:26px;">No</th>
+                <th rowspan="2" class="th-left" style="width:22%;">Nama Anak</th>
+                <th rowspan="2" style="width:6%;">JK</th>
+                <th rowspan="2" style="width:7%;">Umur</th>
+                <th rowspan="2" style="width:7%;">BB (kg)</th>
+                <th rowspan="2" style="width:7%;">TB (cm)</th>
+                <th rowspan="2" style="width:6%;">IMT</th>
+                <th colspan="2" style="width:18%;">BB/U</th>
+                <th colspan="2" style="width:18%;">TB/U</th>
+            </tr>
+            <tr>
+                <th style="width:6%;">Z-Score</th>
+                <th style="width:12%;">Status</th>
+                <th style="width:6%;">Z-Score</th>
+                <th style="width:12%;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($data as $i => $a)
+            @php
+                $even = $i % 2 === 0;
+                $ra   = $even ? 'row-a' : 'row-a2';
+                $rb   = $even ? 'row-b' : 'row-b2';
+            @endphp
+            <tr class="{{ $ra }}">
+                <td class="td-no" rowspan="2">{{ $i + 1 }}</td>
+                <td class="td-info" rowspan="2">
+                    <div class="td-nama">{{ $a->nama_anak }}</div>
+                    @if($a->nama_orang_tua)
+                        <div class="td-sub">{{ $a->nama_orang_tua }}</div>
+                    @endif
+                    @if($a->alamat)
+                        <div class="td-sub">{{ $a->alamat }}</div>
+                    @endif
+                    <div class="td-detail">Umur: {{ $a->tanggal_pengukuran->format('d/m/Y') }}</div>
+                </td>
+                <td class="td-c"    rowspan="2">{{ $a->jenis_kelamin === 'Laki - Laki' ? 'L' : 'P' }}</td>
+                <td class="td-mono" rowspan="2">{{ $a->umur_bulan }} bln</td>
+                <td class="td-mono" rowspan="2">{{ $a->berat_badan }}</td>
+                <td class="td-mono" rowspan="2">{{ $a->tinggi_badan }}</td>
+                <td class="td-mono" rowspan="2">{{ $a->imt ?? '-' }}</td>
+                <td class="td-mono">{{ $a->zscore_bbu ?? '-' }}</td>
+                <td class="td-c">@include('laporan.partials.status-badge', ['status' => $a->status_bbu])</td>
+                <td class="td-mono">{{ $a->zscore_tbu ?? '-' }}</td>
+                <td class="td-c">@include('laporan.partials.status-badge', ['status' => $a->status_tbu])</td>
+            </tr>
+            <tr class="{{ $rb }}">
+                <td class="td-label" colspan="2">BB/TB</td>
+                <td class="td-mono">{{ $a->zscore_bbtb ?? '-' }}</td>
+                <td class="td-c">@include('laporan.partials.status-badge', ['status' => $a->status_bbtb])</td>
+                <td class="td-label" colspan="2" style="background:#0891b2 !important;">IMT/U</td>
+                <td class="td-mono">{{ $a->zscore_imtu ?? '-' }}</td>
+                <td class="td-c">@include('laporan.partials.status-badge', ['status' => $a->status_imtu])</td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="11" style="text-align:center; padding:24px; color:#9ca3af; font-style:italic;">
+                    Tidak ada data untuk ditampilkan.
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    {{-- Spacer: hanya aktif saat print agar konten tidak tertimpa bottom-anchor --}}
+    <div class="bottom-spacer"></div>
+
+</div>{{-- /card --}}
+</div>{{-- /page --}}
+
+{{-- ══════════════════════════════════════════
+     BOTTOM ANCHOR — rekap kiri, TTD kanan
+     Di screen: normal flow. Di print: fixed bottom.
+══════════════════════════════════════════ --}}
+<div class="bottom-anchor">
+    <div class="bottom">
+
+        {{-- Rekap --}}
+        <div class="rekap">
+            <div class="sub-head">Rekapitulasi Status Gizi BB/U</div>
+            @php
+                $rekapRows = [
+                    ['BB Sangat Kurang', $stBuruk,  '#dc2626'],
+                    ['BB Kurang',        $stKurang, '#d97706'],
+                    ['BB Normal',        $stNormal, '#16a34a'],
+                    ['Risiko BB Lebih',  $stRisiko, '#2563eb'],
+                    ['BB Lebih',         $stLebih,  '#7c3aed'],
+                ];
+            @endphp
+            <div class="rekap-cards">
+                @foreach($rekapRows as [$rl, $rc, $rcolor])
+                    @php $rpct = $total > 0 ? round($rc / $total * 100, 1) : 0; @endphp
+                    <div class="rekap-card" style="border-top: 3px solid {{ $rcolor }};">
+                        <div class="rc-val" style="color:{{ $rcolor }};">{{ $rc }}</div>
+                        <div class="rc-pct">{{ $rpct }}%</div>
+                        <div class="rc-lbl">{{ $rl }}</div>
+                    </div>
+                @endforeach
+                <div class="rekap-card" style="border-top: 3px solid var(--navy); background:#f8fafc;">
+                    <div class="rc-val" style="color:var(--navy);">{{ $total }}</div>
+                    <div class="rc-pct">100%</div>
+                    <div class="rc-lbl" style="color:var(--navy);">Total</div>
+                </div>
+            </div>
+            <div class="legend">
+                <strong>Keterangan Z-Score:</strong>
+                &ensp;Z &lt; &minus;3 = Sangat Kurang
+                &ensp;&bull;&ensp; &minus;3 &le; Z &lt; &minus;2 = Kurang
+                &ensp;&bull;&ensp; &minus;2 &le; Z &le; 2 = Normal
+                &ensp;&bull;&ensp; Z &gt; 2 = Lebih / Obesitas
+            </div>
+        </div>
+
+        {{-- TTD --}}
+        <div class="sign-area">
+            <div class="sign-box">
+                <div class="sign-header">MENGETAHUI</div>
+                <div class="sign-body">
+                    <div class="sign-place">______________, {{ now()->isoFormat('D MMMM Y') }}</div>
+                    <div class="sign-role">Petugas Gizi / Nakes<br>Penanggung Jawab</div>
+                    <div class="sign-space"></div>
+                    <div class="sign-line"></div>
+                    <div class="sign-name">( _________________________ )</div>
+                    <div class="sign-nip">NIP. _________________________</div>
+                </div>
+            </div>
+        </div>
+
+    </div>{{-- /bottom --}}
+
+    {{-- Footer --}}
+    <div class="report-footer">
+        <span>
+            <span class="footer-brand">Sistem Informasi Antropometri Anak</span>
+            &bull; Permenkes No. 2 Tahun 2020
+        </span>
+        <span>{{ now()->format('d/m/Y H:i') }} WIB</span>
+    </div>
+</div>{{-- /bottom-anchor --}}
 
 </body>
 </html>

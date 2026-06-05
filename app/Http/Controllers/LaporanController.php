@@ -28,7 +28,7 @@ class LaporanController extends Controller
     {
         $data = $this->getQuery($request)->get();
         $pdf  = Pdf::loadView('laporan.pdf', compact('data', 'request'))
-                   ->setPaper('a4', 'landscape')
+                   ->setPaper('a4', 'portrait')
                    ->setOption(['defaultFont' => 'DejaVu Sans', 'isHtml5ParserEnabled' => true, 'isRemoteEnabled' => false]);
         return $pdf->download('laporan-antropometri-' . now()->format('Ymd') . '.pdf');
     }
