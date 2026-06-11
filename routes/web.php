@@ -3,8 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnakController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\DashboardController;
 
-Route::get('/', fn() => redirect()->route('anak.index'));
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('anak', AnakController::class);
 
 Route::prefix('laporan')->name('laporan.')->group(function () {

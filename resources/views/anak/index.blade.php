@@ -1,16 +1,9 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h4 class="mb-1 fw-bold text-dark">Data Pengukuran Antropometri</h4>
-        <p class="text-muted mb-0 small">Penilaian Status Gizi Anak</p>
-    </div>
-    <a href="{{ route('anak.create') }}" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-1"></i> Tambah Data
-    </a>
-</div>
+@section('title', 'Data Anak')
+@section('page-title', 'Data Pengukuran Antropometri')
 
+@section('content')
 {{-- Statistik Ringkas --}}
 <div class="row g-3 mb-4">
     @php

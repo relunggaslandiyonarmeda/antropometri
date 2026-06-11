@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Edit Data')
+@section('page-title', 'Edit Data: {{ $anak->nama_anak ?? "" }}')
+
 @section('content')
 <div class="d-flex align-items-center mb-4">
     <a href="{{ route('anak.index') }}" class="btn btn-outline-secondary btn-sm me-3">
