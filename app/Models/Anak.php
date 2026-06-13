@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Services\ZScoreService;
 
 class Anak extends Model
 {
@@ -54,5 +55,52 @@ class Anak extends Model
         $lahir = Carbon::parse($tanggalLahir);
         $ukur  = Carbon::parse($tanggalPengukuran);
         return (int) $lahir->diffInMonths($ukur);
+    }
+
+    /**
+     * Gender options used across app (keep consistent with validations/views)
+     */
+    public const GENDERS = [
+        'Laki - Laki',
+        'Perempuan',
+    ];
+
+    /**
+     * Compute derived antropometri fields (umur_bulan, imt, z-scores, statuses)
+     * Accepts an array with keys: tanggal_lahir, tanggal_pengukuran, berat_badan, tinggi_badan, jenis_kelamin
+     * Returns associative array of computed fields to merge into model create/update.
+     */
+    public static function computeGizi(array $data): array
+    {
+        $umurBulan = self::hitungUmurBulan($data['tanggal_lahir'], $data['tanggal_pengukuran']);
+        $imt       = self::hitungIMT((float) $data['berat_badan'], (float) $data['tinggi_badan']);
+        $jk        = $data['jenis_kelamin'];
+        $bb        = (float) $data['berat_badan'];
+        $tb        = (float) $data['tinggi_badan'];
+
+        $sdBBU  = ZScoreService::getSDtabelBBU($umurBulan, $jk);
+        $zBBU   = $sdBBU ? ZScoreService::hitungZScore($bb, $sdBBU) : null;
+
+        $sdTBU  = ZScoreService::getSDtabelTBU($umurBulan, $jk);
+        $zTBU   = $sdTBU ? ZScoreService::hitungZScore($tb, $sdTBU) : null;
+
+        $sdBBTB = ZScoreService::getSDtabelBBTB($tb, $jk);
+        $zBBTB  = $sdBBTB ? ZScoreService::hitungZScore($bb, $sdBBTB) : null;
+
+        $sdIMTU = ZScoreService::getSDtabelIMTU($umurBulan, $jk);
+        $zIMTU  = $sdIMTU ? ZScoreService::hitungZScore($imt, $sdIMTU) : null;
+
+        return [
+            'umur_bulan'  => $umurBulan,
+            'imt'         => $imt,
+            'zscore_bbu'  => $zBBU,
+            'status_bbu'  => $zBBU !== null ? ZScoreService::statusBBU($zBBU) : null,
+            'zscore_tbu'  => $zTBU,
+            'status_tbu'  => $zTBU !== null ? ZScoreService::statusTBU($zTBU) : null,
+            'zscore_bbtb' => $zBBTB,
+            'status_bbtb' => $zBBTB !== null ? ZScoreService::statusBBTB($zBBTB) : null,
+            'zscore_imtu' => $zIMTU,
+            'status_imtu' => $zIMTU !== null ? ZScoreService::statusIMTU($zIMTU) : null,
+        ];
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anak;
-use App\Services\ZScoreService;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -41,43 +41,14 @@ class AnakController extends Controller
             'nik_anak'           => 'nullable|string|max:20',
             'nama_anak'          => 'required|string|max:255',
             'tanggal_lahir'      => 'required|date',
-            'jenis_kelamin'      => 'required|in:Laki - Laki,Perempuan',
+            'jenis_kelamin'      => ['required', Rule::in(Anak::GENDERS)],
             'berat_badan'        => 'required|numeric|min:0.1|max:200',
             'tinggi_badan'       => 'required|numeric|min:10|max:250',
             'keterangan'         => 'nullable|string',
         ]);
+        $calculated = Anak::computeGizi($validated);
 
-        $umurBulan = Anak::hitungUmurBulan($validated['tanggal_lahir'], $validated['tanggal_pengukuran']);
-        $imt       = Anak::hitungIMT($validated['berat_badan'], $validated['tinggi_badan']);
-        $jk        = $validated['jenis_kelamin'];
-        $bb        = $validated['berat_badan'];
-        $tb        = $validated['tinggi_badan'];
-
-        // BB/U
-        $sdBBU     = ZScoreService::getSDtabelBBU($umurBulan, $jk);
-        $zBBU      = $sdBBU ? ZScoreService::hitungZScore($bb, $sdBBU) : null;
-        // TB/U
-        $sdTBU     = ZScoreService::getSDtabelTBU($umurBulan, $jk);
-        $zTBU      = $sdTBU ? ZScoreService::hitungZScore($tb, $sdTBU) : null;
-        // BB/TB
-        $sdBBTB    = ZScoreService::getSDtabelBBTB($tb, $jk);
-        $zBBTB     = $sdBBTB ? ZScoreService::hitungZScore($bb, $sdBBTB) : null;
-        // IMT/U
-        $sdIMTU    = ZScoreService::getSDtabelIMTU($umurBulan, $jk);
-        $zIMTU     = $sdIMTU ? ZScoreService::hitungZScore($imt, $sdIMTU) : null;
-
-        Anak::create(array_merge($validated, [
-            'umur_bulan'   => $umurBulan,
-            'imt'          => $imt,
-            'zscore_bbu'   => $zBBU,
-            'status_bbu'   => $zBBU !== null ? ZScoreService::statusBBU($zBBU) : null,
-            'zscore_tbu'   => $zTBU,
-            'status_tbu'   => $zTBU !== null ? ZScoreService::statusTBU($zTBU) : null,
-            'zscore_bbtb'  => $zBBTB,
-            'status_bbtb'  => $zBBTB !== null ? ZScoreService::statusBBTB($zBBTB) : null,
-            'zscore_imtu'  => $zIMTU,
-            'status_imtu'  => $zIMTU !== null ? ZScoreService::statusIMTU($zIMTU) : null,
-        ]));
+        Anak::create(array_merge($validated, $calculated));
 
         return redirect()->route('anak.index')->with('success', 'Data berhasil disimpan.');
     }
@@ -101,39 +72,14 @@ class AnakController extends Controller
             'nik_anak'           => 'nullable|string|max:20',
             'nama_anak'          => 'required|string|max:255',
             'tanggal_lahir'      => 'required|date',
-            'jenis_kelamin'      => 'required|in:Laki - Laki,Perempuan',
+            'jenis_kelamin'      => ['required', Rule::in(Anak::GENDERS)],
             'berat_badan'        => 'required|numeric|min:0.1|max:200',
             'tinggi_badan'       => 'required|numeric|min:10|max:250',
             'keterangan'         => 'nullable|string',
         ]);
+        $calculated = Anak::computeGizi($validated);
 
-        $umurBulan = Anak::hitungUmurBulan($validated['tanggal_lahir'], $validated['tanggal_pengukuran']);
-        $imt       = Anak::hitungIMT($validated['berat_badan'], $validated['tinggi_badan']);
-        $jk        = $validated['jenis_kelamin'];
-        $bb        = $validated['berat_badan'];
-        $tb        = $validated['tinggi_badan'];
-
-        $sdBBU     = ZScoreService::getSDtabelBBU($umurBulan, $jk);
-        $zBBU      = $sdBBU ? ZScoreService::hitungZScore($bb, $sdBBU) : null;
-        $sdTBU     = ZScoreService::getSDtabelTBU($umurBulan, $jk);
-        $zTBU      = $sdTBU ? ZScoreService::hitungZScore($tb, $sdTBU) : null;
-        $sdBBTB    = ZScoreService::getSDtabelBBTB($tb, $jk);
-        $zBBTB     = $sdBBTB ? ZScoreService::hitungZScore($bb, $sdBBTB) : null;
-        $sdIMTU    = ZScoreService::getSDtabelIMTU($umurBulan, $jk);
-        $zIMTU     = $sdIMTU ? ZScoreService::hitungZScore($imt, $sdIMTU) : null;
-
-        $anak->update(array_merge($validated, [
-            'umur_bulan'  => $umurBulan,
-            'imt'         => $imt,
-            'zscore_bbu'  => $zBBU,
-            'status_bbu'  => $zBBU !== null ? ZScoreService::statusBBU($zBBU) : null,
-            'zscore_tbu'  => $zTBU,
-            'status_tbu'  => $zTBU !== null ? ZScoreService::statusTBU($zTBU) : null,
-            'zscore_bbtb' => $zBBTB,
-            'status_bbtb' => $zBBTB !== null ? ZScoreService::statusBBTB($zBBTB) : null,
-            'zscore_imtu' => $zIMTU,
-            'status_imtu' => $zIMTU !== null ? ZScoreService::statusIMTU($zIMTU) : null,
-        ]));
+        $anak->update(array_merge($validated, $calculated));
 
         return redirect()->route('anak.index')->with('success', 'Data berhasil diperbarui.');
     }
